@@ -6,53 +6,36 @@
 /*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 16:28:50 by fwhite42          #+#    #+#             */
-/*   Updated: 2023/12/26 10:00:34 by fwhite42         ###   ########.fr       */
+/*   Updated: 2023/12/26 21:13:01 by fwhite42         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include"get_next_line.h"
 
-#include<fcntl.h>
-#include<stdio.h>
 
-// Copies linelen bytes from memory to dst
-static void	gnl_memcpy(char *dst, char *memory, size_t linelen)
+typedef struct s_buffer {
+	void *start;
+	size_t offset;
+	size_t size;
+}	t_buffer;
+
+typedef struct s_node {
+	int fd;
+	t_buffer *buffer;
+	t_node *next;
+}	t_node;
+
+gnl_i
+
+gnl_memory_set(t_node *node, int fd, char *buffer, size_t length)
 {
-	while (linelen--)
-		*(dst++) = *(memory++);
+	*new_node = malloc(sizeof(t_buffer))
+	node->fd = fd;
+	new_node->buffer = buffer;
+	nenode->length = length;
+	node->next = NULL;
 }
 
-// Allocates a *buff and reads from fd, writing *buff.
-static void	gnl_read(int fd, char **buff, ssize_t *bl)
-{
-	*buff = (char *)malloc(BUFFER_SIZE + 1);
-	if (*buff && fd >= 0)
-	{
-		*bl = read(fd, *buff, BUFFER_SIZE);
-	}
-}
-
-// Computes the length of a string in memory
-static void	get_memory_length(char *memory, ssize_t *i)
-{
-	*i = 0;
-	while (memory && memory[*i])
-		(*i)++;
-}
-
-// Computes the length of a 'sep'-terminating string. If the string 0-terminates
-// before reaching 'sep', the length of the string is returned, otherwise the
-// length of the 'sep'-terminating string is returned ('sep' partecipates in
-// length of the string) 
-static void	get_chunk_length(char *buff, size_t bl, char sep, size_t *cl)
-{
-	*cl = 0;
-	while (*cl < bl && buff[*cl] != sep)
-		(*cl)++;
-	if (*cl < bl)
-		(*cl)++;
-}
-
-static void	gnl_main(int fd, int depth, char **line, char **memory)
+static void	gnl_main(int fd, char **line, char **memory, int line_length)
 {
 	ssize_t	ml;
 	size_t	cl;
@@ -64,8 +47,6 @@ static void	gnl_main(int fd, int depth, char **line, char **memory)
 	if (ml == 0)
 	{
 		gnl_read(fd, memory, &ml);
-		//printf("MEMORY<%s>\n", *memory);
-		//printf("MEMORY_LENGTH<%zd>\n", ml);
 		if (ml <= 0)
 			return ;
 		trash = *memory;
@@ -75,13 +56,13 @@ static void	gnl_main(int fd, int depth, char **line, char **memory)
 	*memory += cl;
 	if (*line == NULL && *(*memory - 1) == '\n')
 	{
-		*line = (char *)malloc(depth * BUFFER_SIZE + cl + 1);
-		(*line)[depth * BUFFER_SIZE + cl] = 0;
+		*line = (char *)malloc(line_length + cl + 1);
+		(*line)[line_length + cl] = 0;
 	}
 	else if (*line == NULL)
-		gnl_main(fd, depth + 1, line, memory);
-	gnl_memcpy(*line + (BUFFER_SIZE * depth), buff, cl);
-	if (*memory == 0)
+		gnl_main(fd, line, memory, line_length + cl);
+	gnl_memcpy(*line + line_length, buff, cl);
+	if (**memory == 0)
 	{
 		free(trash);
 	}
@@ -89,42 +70,10 @@ static void	gnl_main(int fd, int depth, char **line, char **memory)
 
 char	*get_next_line(int fd)
 {
-	char *line;
-	static char *memory;
+	char		*line;
+	static char	*memory;
 
-	line = NULL; 
-	gnl_main(fd, 0, &line, &memory);
-	return line;
-}
-
-void gnl_print(int fd)
-{
-	char *line;
-	line = get_next_line(fd);
-	printf("LINE<%s>\n", line);
-}
-//int			main(int ac, char **av)
-int			main(void)
-{
-	int fd;
-	char *filename;
-	char *line;
-	gnl_print(100);
-	filename = "test1";
-	fd = open(filename, O_RDONLY);
-	gnl_print(fd);
-	gnl_print(fd);
-	gnl_print(fd);
-	gnl_print(fd);
-	gnl_print(fd);
-	gnl_print(fd);
-	gnl_print(fd);
-	gnl_print(fd);
-	gnl_print(fd);
-	gnl_print(fd);
-	gnl_print(fd);
-	gnl_print(fd);
-	gnl_print(fd);
-
-	return (0);
+	line = NULL;
+	gnl_main(fd, &line, &memory, 0);
+	return (line);
 }
