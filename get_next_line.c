@@ -6,7 +6,7 @@
 /*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 16:28:50 by fwhite42          #+#    #+#             */
-/*   Updated: 2023/12/24 17:05:33 by fwhite42         ###   ########.fr       */
+/*   Updated: 2023/12/26 10:00:34 by fwhite42         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include"get_next_line.h"
@@ -14,73 +14,80 @@
 #include<fcntl.h>
 #include<stdio.h>
 
-static void		gnl_memcpy(char *dst, char *memory, size_t linelen)
+// Copies linelen bytes from memory to dst
+static void	gnl_memcpy(char *dst, char *memory, size_t linelen)
 {
 	while (linelen--)
 		*(dst++) = *(memory++);
 }
 
-static void		gnl_read(int fd, char **buff, size_t *bufflen)
+// Allocates a *buff and reads from fd, writing *buff.
+static void	gnl_read(int fd, char **buff, ssize_t *bl)
 {
-	printf("Reading with BUFFER_SIZE = %i\n", BUFFER_SIZE);
 	*buff = (char *)malloc(BUFFER_SIZE + 1);
-	*bufflen = read(fd, *buff, BUFFER_SIZE);
+	if (*buff && fd >= 0)
+	{
+		*bl = read(fd, *buff, BUFFER_SIZE);
+	}
 }
 
-static void get_memory_length(char *memory, size_t *i)
+// Computes the length of a string in memory
+static void	get_memory_length(char *memory, ssize_t *i)
 {
 	*i = 0;
-	while(memory && memory[*i])
+	while (memory && memory[*i])
 		(*i)++;
 }
 
-static void get_chunk_length(char *buff, size_t bufflen, char sep, size_t *chunklen)
+// Computes the length of a 'sep'-terminating string. If the string 0-terminates
+// before reaching 'sep', the length of the string is returned, otherwise the
+// length of the 'sep'-terminating string is returned ('sep' partecipates in
+// length of the string) 
+static void	get_chunk_length(char *buff, size_t bl, char sep, size_t *cl)
 {
-	*chunklen = 0;
-	while(*chunklen < bufflen && buff[*chunklen] != sep)
-		(*chunklen)++;
-	if (*chunklen < bufflen)
-		(*chunklen)++;
+	*cl = 0;
+	while (*cl < bl && buff[*cl] != sep)
+		(*cl)++;
+	if (*cl < bl)
+		(*cl)++;
 }
 
-static void		gnl_main(int fd, int depth, char **line, char **memory)
+static void	gnl_main(int fd, int depth, char **line, char **memory)
 {
-	printf("GNL MAIN > depth : %i\n", depth);
-	size_t memlen;
-	size_t chunklen;
-	char *buff;
-	char *trash;
+	ssize_t	ml;
+	size_t	cl;
+	char	*buff;
+	char	*trash;
 
 	trash = NULL;
-	printf("MEMORY[%p]<%s>\n",memory,*memory);
-	get_memory_length(*memory, &memlen);
-	if (memlen == 0)
+	get_memory_length(*memory, &ml);
+	if (ml == 0)
 	{
-		if (*memory)
-			trash = *memory + memlen - BUFFER_SIZE - 1; 
-		printf("trash<%s>\n", trash);
-		gnl_read(fd, memory, &memlen);
-		printf("MEMORY_UPDATED[%p]<%s>\n",memory,*memory);
-		if (!memlen)
+		gnl_read(fd, memory, &ml);
+		//printf("MEMORY<%s>\n", *memory);
+		//printf("MEMORY_LENGTH<%zd>\n", ml);
+		if (ml <= 0)
 			return ;
+		trash = *memory;
 	}
-	get_chunk_length(*memory, memlen, '\n', &chunklen);
-	printf("CHUNK LENGTH: %zu\n", chunklen);
-	*memory += chunklen;
+	get_chunk_length(*memory, ml, '\n', &cl);
+	buff = *memory;
+	*memory += cl;
 	if (*line == NULL && *(*memory - 1) == '\n')
 	{
-		*line = (char *)malloc(depth * BUFFER_SIZE + chunklen + 1);
-		printf("END OF LINE WAS FOUND IN MEMORY\n");
-		(*line)[depth * BUFFER_SIZE + chunklen] = 0;
+		*line = (char *)malloc(depth * BUFFER_SIZE + cl + 1);
+		(*line)[depth * BUFFER_SIZE + cl] = 0;
 	}
 	else if (*line == NULL)
 		gnl_main(fd, depth + 1, line, memory);
-	gnl_memcpy(*line + (BUFFER_SIZE * depth), buff, chunklen);
-	printf("buff %s\n",buff);
-	free(trash);
+	gnl_memcpy(*line + (BUFFER_SIZE * depth), buff, cl);
+	if (*memory == 0)
+	{
+		free(trash);
+	}
 }
 
-char *get_next_line(int fd)
+char	*get_next_line(int fd)
 {
 	char *line;
 	static char *memory;
@@ -94,18 +101,23 @@ void gnl_print(int fd)
 {
 	char *line;
 	line = get_next_line(fd);
-	printf("Line<%s>\n", line);
+	printf("LINE<%s>\n", line);
 }
-
 //int			main(int ac, char **av)
 int			main(void)
 {
 	int fd;
 	char *filename;
 	char *line;
-
-	filename = "test";
+	gnl_print(100);
+	filename = "test1";
 	fd = open(filename, O_RDONLY);
+	gnl_print(fd);
+	gnl_print(fd);
+	gnl_print(fd);
+	gnl_print(fd);
+	gnl_print(fd);
+	gnl_print(fd);
 	gnl_print(fd);
 	gnl_print(fd);
 	gnl_print(fd);
