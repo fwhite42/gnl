@@ -6,7 +6,7 @@
 /*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 16:28:50 by fwhite42          #+#    #+#             */
-/*   Updated: 2023/12/26 21:13:01 by fwhite42         ###   ########.fr       */
+/*   Updated: 2023/12/29 16:19:07 by fwhite42         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include"get_next_line.h"
@@ -23,8 +23,6 @@ typedef struct s_node {
 	t_buffer *buffer;
 	t_node *next;
 }	t_node;
-
-gnl_i
 
 gnl_memory_set(t_node *node, int fd, char *buffer, size_t length)
 {
