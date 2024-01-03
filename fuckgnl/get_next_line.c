@@ -6,7 +6,7 @@
 /*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 18:40:27 by fwhite42          #+#    #+#             */
-/*   Updated: 2024/01/02 22:51:14 by fwhite42         ###   ########.fr       */
+/*   Updated: 2024/01/03 14:16:40 by fwhite42         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ int	gnl_read_and_append(int fd, char **data)
 	bytes_read = read(fd, newdata + datalen, BUFFER_SIZE);
 	gnl_malloc(data, 0, 0);
 	*data = (newdata);
+	printf("%i bytes were read\n", bytes_read);
+	printf("after gnl read and append the pointer PTR at %p has value %p\n", data, *data);
+	printf("PTR <%s>\n",*data);
 	return (bytes_read);
 }
 
@@ -35,10 +38,11 @@ int	gnl_split(char **data, char **memory)
 	size_t	line_len;
 	size_t	data_len;
 
+	printf("gnl split call on\n");
 	line = NULL;
 	leftovers = NULL;
-	printf("data = <%s>\n", *data);
-	printf("memory = <%s>\n", *memory);
+	printf("data\t= [%p] <%s>\n", *data, *data);
+	printf("memory\t= [%p] <%s>\n", *memory, *memory);
 	line_len = gnl_memory_len(*data, "\0\n", 2);
 	data_len = gnl_memory_len(*data, "\0", 1);
 	if (data_len == line_len)
@@ -65,7 +69,7 @@ char	*get_next_line(int fd)
 
 	line = memory;
 	keep_going = gnl_read_and_append(fd, &line);
-	while (keep_going)
+	while (keep_going > 0)
 	{
 		if (gnl_split(&line, &memory))
 			return (line);
