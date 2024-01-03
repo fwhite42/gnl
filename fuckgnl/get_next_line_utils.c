@@ -6,7 +6,7 @@
 /*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/02 22:42:51 by fwhite42          #+#    #+#             */
-/*   Updated: 2024/01/03 14:07:17 by fwhite42         ###   ########.fr       */
+/*   Updated: 2024/01/03 20:01:53 by fwhite42         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,7 @@ size_t	gnl_memory_len(char *char_ptr, char *sep_list, int sep_list_length)
 void	gnl_malloc(char **target, size_t oldsize, size_t newsize)
 {
 	size_t	i;
-	printf("gnl malloc call on pointer PTR stored at %p\n", target);
-	printf("PTR\t= [%p]\n", *target);
-	printf("OS\t= %zu\n", oldsize);
-	printf("NS\t= %zu\n", newsize);
+
 	i = 0;
 	if (*target)
 	{
@@ -70,5 +67,4 @@ void	gnl_malloc(char **target, size_t oldsize, size_t newsize)
 				(*target)[i++] = 0;
 		}
 	}
-	printf("PTR\t= [%p]\n", *target);
 }

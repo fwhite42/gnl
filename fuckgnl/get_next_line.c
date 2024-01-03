@@ -6,74 +6,78 @@
 /*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 18:40:27 by fwhite42          #+#    #+#             */
-/*   Updated: 2024/01/03 14:16:40 by fwhite42         ###   ########.fr       */
+/*   Updated: 2024/01/03 20:01:51 by fwhite42         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include"get_next_line.h"
 
-int	gnl_read_and_append(int fd, char **data)
+int	gnl_read_and_append(int fd, char **cache_address)
 {
 	int		bytes_read;
-	char	*newdata;
-	size_t	datalen;
+	char	*new_cache;
+	size_t	cache_len;
 
-	newdata = NULL;
-	datalen = gnl_memory_len(*data, "\0", 1);
-	gnl_malloc(&newdata, 0, datalen + BUFFER_SIZE + 1);
-	gnl_memory_copy(newdata, *data, datalen);
-	bytes_read = read(fd, newdata + datalen, BUFFER_SIZE);
-	gnl_malloc(data, 0, 0);
-	*data = (newdata);
-	printf("%i bytes were read\n", bytes_read);
-	printf("after gnl read and append the pointer PTR at %p has value %p\n", data, *data);
-	printf("PTR <%s>\n",*data);
+	new_cache = NULL;
+	cache_len = gnl_memory_len(*cache_address, "\0", 1);
+	gnl_malloc(&new_cache, 0, cache_len + BUFFER_SIZE + 1);
+	if (cache_len)
+		gnl_memory_copy(new_cache, *cache_address, cache_len);
+	bytes_read = read(fd, new_cache + cache_len, BUFFER_SIZE);
+	gnl_malloc(cache_address, 0, 0);
+	*cache_address = (new_cache);
 	return (bytes_read);
 }
 
-int	gnl_split(char **data, char **memory)
+int	gnl_split(char **src, char **dst)
 {
-	char	*line;
+	char	*new_src;
 	char	*leftovers;
-	size_t	line_len;
-	size_t	data_len;
+	size_t	new_src_len;
+	size_t	src_len;
 
-	printf("gnl split call on\n");
-	line = NULL;
+	new_src = NULL;
 	leftovers = NULL;
-	printf("data\t= [%p] <%s>\n", *data, *data);
-	printf("memory\t= [%p] <%s>\n", *memory, *memory);
-	line_len = gnl_memory_len(*data, "\0\n", 2);
-	data_len = gnl_memory_len(*data, "\0", 1);
-	if (data_len == line_len)
+	new_src_len = gnl_memory_len(*src, "\0\n", 2);
+	src_len = gnl_memory_len(*src, "\0", 1);
+	if (src_len == new_src_len)
 		return (0);
-	gnl_malloc(&line, 0, line_len + 2);
-	gnl_malloc(&leftovers, 0, data_len - line_len + 1);
-	gnl_memory_copy(line, *data, line_len + 1);
-	gnl_memory_copy(leftovers, *data + line_len + 1, data_len - line_len);
-	printf("LINE (%s)\n", line);
-	printf("LEFTOVERS (%s)\n", leftovers);
-	gnl_malloc(data, 0, 0);
-	gnl_malloc(memory, 0, 0);
-	free(*data);
-	*data = line;
-	*memory = leftovers;
+	gnl_malloc(&new_src, 0, new_src_len + 2);
+	gnl_malloc(&leftovers, 0, src_len - new_src_len + 1);
+	gnl_memory_copy(new_src, *src, new_src_len + 1);
+	gnl_memory_copy(leftovers, *src + new_src_len + 1, src_len - new_src_len);
+	if (*src != *dst)
+		gnl_malloc(dst, 0, 0);
+	gnl_malloc(src, 0, 0);
+	*src = new_src;
+	*dst = leftovers;
 	return (1);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	*memory;
-	char		*line;
-	int			keep_going;
+	char		*cache;
+	int			keep_reading;
 
-	line = memory;
-	keep_going = gnl_read_and_append(fd, &line);
-	while (keep_going > 0)
+	cache = NULL;
+	if (memory)
 	{
-		if (gnl_split(&line, &memory))
-			return (line);
-		keep_going = gnl_read_and_append(fd, &line);
+		cache = memory;
+		if (gnl_split(&cache, &memory))
+			return (cache);
 	}
-	return (NULL);
+	keep_reading = gnl_read_and_append(fd, &cache);
+	while (keep_reading > 0)
+	{
+		if (gnl_split(&cache, &memory))
+			return (cache);
+		else
+		{
+			keep_reading = gnl_read_and_append(fd, &cache);
+			if (keep_reading == 0)
+				return (cache);
+		}
+	}
+	return (cache);
 }
