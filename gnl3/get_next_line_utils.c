@@ -6,48 +6,93 @@
 /*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/30 17:34:24 by fwhite42          #+#    #+#             */
-/*   Updated: 2023/12/30 18:32:43 by fwhite42         ###   ########.fr       */
+/*   Updated: 2024/01/01 15:06:30 by fwhite42         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-void gnl_recursion(int fd, char **line, t_gnl_memory memory)
-{
-	t_gnl_buffer *buff;
-	size_t chunklen;
+#include"get_next_line"
 
-	buff = *gnl_read_cache(memory.cache, fd);
-	if (buff == NULL)
-	   buff = *gnl_write_cache(memory.cache, fd);	
-	chunklen = get_chunk_length(buff);
-	buff->linelength += chunklen;
+t_list	*gnl_write_cache(t_gnl_memory *memory, int fd)
+{
 }
 
-t_gnl_buffer *gnl_write_cache(t_list *cache, int fd)
+//==============================================================================
+//	> gnl_read_cache
+//
+//	Inspects the memory->cache and returns the list node whose contnent is 
+//	a buffer associated to the given fd.
+//==============================================================================
+t_list	*gnl_read_cache(t_gnl_memory *memory, int fd)
 {
-	t_gnl_buffer *buff;
-	
-	*buff = malloc(sizeof(t_gnl_buffer));
-	buff->fd = fd;
-	buff->data = malloc(BUFFER_SIZE);
-	buff->length = 0;
-	buff->offset = 0;
-	buff->linelength = 0;
-	if (cache == NULL)
-		*cache = (t_list *)malloc(sizeof(t_list));
-	cache->content = (void *)buff;
-	cache->next = NULL;
-}
+	t_list	*head;
 
-t_gnl_buffer *gnl_read_cache(t_list *cache, int fd)
-{
-	t_gnl_buffer *buff;
-	while (cache != NULL)
+	if (memory == NULL)
+		return (NULL);
+	head = memory->cache;
+	while (head != NULL \
+			&& ((t_gnl_buffer *)(head->content))->fd != fd)
 	{
-		buff = (t_gnl_buffer *)(cache->content);
-		if (buff->fd == fd)
-			return buff;
-		cache = cache->next;
+		head = head->next;
 	}
-	buff = NULL;
-	return buff;
+	return (head);
+}
+
+void	gnl_delete_cache(t_gnl_memory *memory, int fd)
+{
+	t_list	*previous;
+	t_list	*current;
+
+	if (memory == NULL)
+		return ;
+	previous = NULL;
+	current = memory->cache;
+	while (current != NULL \
+			&& ((t_gnl_buffer *)(current->content))->fd != fd)
+	{
+		previous = current;
+		current = current->next;
+	}
+	previous->next = current->next;
+	free(((t_gnl_buffer *)(current->content))->data);
+	free(current->content);
+	free(current);
+}
+
+void	gnl_collect_garbage(t_gnl_memory *memory, char *buff)
+{
+	t_list	*node;
+
+	node = malloc(sizeof(t_list));
+	if (node == NULL)
+		return ;
+	node->content = (void *)buff;
+	node->next = NULL;
+	if (memory->garbage == NULL)
+	{
+	memory->garbage = node;
+	}
+	while (garbage->next != NULL)
+		garbage = garbage->next;
+	*garbage = node;
+}
+
+void	gnl_destroy_garbage(t_gnl_memory *memory)
+{
+	t_list	*head;
+	size_t	i;
+
+	i = 0;
+	if (memory == NULL)
+		return ;
+	while (memory->garbage)
+	{
+		head = memory->garbage;
+		memory->garbage = memory->garbage->next;
+		while (i < BUFFER_SIZE)
+			((char *)(head->content))[i++] = 0;
+		free(head->content);
+		head->content = NULL;
+		head->next = NULL;
+		free(head);
+	}
 }

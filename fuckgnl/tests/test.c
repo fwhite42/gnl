@@ -6,7 +6,7 @@
 /*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/02 22:32:13 by fwhite42          #+#    #+#             */
-/*   Updated: 2024/01/03 19:37:01 by fwhite42         ###   ########.fr       */
+/*   Updated: 2024/01/04 21:41:39 by fwhite42         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@ void	test(int fd)
 	char	*line;
 
 	line = get_next_line(fd);
-	if (line != NULL)
-		printf("%s\033[41m \033[0m", line);
+	printf("%s\033[41m \033[0m", line);
 }
 
 int	main(int ac, char **av)
