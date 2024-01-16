@@ -6,7 +6,7 @@
 /*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/02 22:32:13 by fwhite42          #+#    #+#             */
-/*   Updated: 2024/01/04 21:41:39 by fwhite42         ###   ########.fr       */
+/*   Updated: 2024/01/16 15:45:28 by fwhite42         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	main(int ac, char **av)
 	int	fd;
 	int	t;
 
-	fd = open("test.txt", O_RDONLY);
+	fd = open("./tests/test.txt", O_RDONLY);
 	if (ac == 1)
 		test(fd);
 	else

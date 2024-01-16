@@ -6,7 +6,7 @@
 /*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/02 22:42:51 by fwhite42          #+#    #+#             */
-/*   Updated: 2024/01/15 19:58:00 by fwhite42         ###   ########.fr       */
+/*   Updated: 2024/01/16 17:38:38 by fwhite42         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,29 +42,32 @@ size_t	gnl_memory_len(char *char_ptr, char *sep_list, int sep_list_length)
 	return (len);
 }
 
+void	gnl_bzero(char *target, size_t number_of_bytes)
+{
+	if (target)
+	{
+		while (number_of_bytes--)
+			*(target++) = 0;
+	}
+}
+
 void	gnl_config_memory(char **target, size_t old_size, size_t new_size)
 {
 	size_t	i;
 
-	i = 0;
 	if (*target)
 	{
+		i = 0;
 		if (old_size)
-		{
-			while (i < old_size)
-				(*target)[i++] = 0;
-		}
+			gnl_bzero(*target, old_size);
 		free(*target);
 		*target = NULL;
 	}
-	i = 0;
 	if (new_size)
 	{
+		i = 0;
 		*target = (char *)malloc(new_size);
 		if (*target)
-		{
-			while (i < new_size)
-				(*target)[i++] = 0;
-		}
+			gnl_bzero(*target, new_size);
 	}
 }

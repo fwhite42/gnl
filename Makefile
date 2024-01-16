@@ -18,7 +18,7 @@ OBJECTS			:= $(FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 TEST_FILES		:= $(TEST_FILE_NAMES:%=$(TEST_DIR)/%.c)
 
 # Compiler settings
-COMPILE			:= gcc
+COMPILE			:= gcc -D BUFFER_SIZE=1
 COMPILE_FLAGS	:= -Wall -Werror -Wextra
 DONT_LINK		:= -c
 LINK_GNL		:= -L. -lgnl
@@ -27,10 +27,6 @@ HEADERS			:= -I$(SRC_DIR)
 ARCHIVE			:= ar -rc
 
 # Make rules
-
-temp:
-	echo $(FILES)
-	echo $(OBJECTS)
 
 $(OBJ_DIR)	:
 	@mkdir $(OBJ_DIR)
@@ -50,6 +46,6 @@ fclean : clean
 
 $(TEST_FILE_NAMES):%: $(TEST_DIR)/%.c $(NAME)
 	@gcc $(HEADERS) $(LINK_GNL) $< -o run_test.exe
-	@./run_test.exe $(SILENT)
+	@./run_test.exe 5 $(SILENT)
 	@rm -rf ./run_test.exe $(SILENT)
 .PHONY: objects clean archive fclean $(TEST_FILE_NAMES)

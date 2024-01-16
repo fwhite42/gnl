@@ -6,7 +6,7 @@
 /*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 18:40:27 by fwhite42          #+#    #+#             */
-/*   Updated: 2024/01/15 19:57:55 by fwhite42         ###   ########.fr       */
+/*   Updated: 2024/01/16 18:27:50 by fwhite42         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,39 +18,40 @@ int	gnl_read_and_append(int fd, char **cache_address)
 	char	*new_cache;
 	size_t	cache_len;
 	char	buffer[BUFFER_SIZE + 1];
-	int		i;
 
-	i = 0;
-	new_cache = NULL;
-	while (i < BUFFER_SIZE + 1)
-		buffer[i++] = 0;
+	gnl_bzero(buffer, BUFFER_SIZE + 1);
 	bytes_read = read(fd, buffer, BUFFER_SIZE);
-	if (bytes_read <= 0)
-		return (bytes_read);
+	if (bytes_read < 0)
+		return (-1);
+	if (bytes_read == 0)
+		return (0);
 	cache_len = gnl_memory_len(*cache_address, "\0", 1);
+	new_cache = NULL;
 	gnl_config_memory(&new_cache, 0, cache_len + bytes_read + 1);
 	if (new_cache)
 	{
-		gnl_memory_copy(new_cache + cache_len, buffer, bytes_read);
 		gnl_memory_copy(new_cache, *cache_address, cache_len);
-		gnl_config_memory(cache_address, 0, 0);
+		gnl_memory_copy(new_cache + cache_len, buffer, bytes_read);
+		gnl_config_memory(cache_address, cache_len, 0);
 		*cache_address = (new_cache);
+		return (bytes_read);
 	}
-	return (bytes_read);
+	else
+		return (-2);
 }
 
 int	gnl_split_cache_and_send2memory(char **cache, char **memory)
 {
-	char	*new_cache;
-	char	*new_memory;
+	size_t	cache_len;
 	size_t	new_cache_len;
 	size_t	new_memory_len;
-	size_t	cache_len;
+	char	*new_cache;
+	char	*new_memory;
 
-	new_cache = NULL;
-	new_memory = NULL;
 	new_cache_len = gnl_memory_len(*cache, "\0\n", 2);
 	cache_len = gnl_memory_len(*cache, "\0", 1);
+	new_cache = NULL;
+	new_memory = NULL;
 	new_memory_len = cache_len - new_cache_len;
 	if (cache_len == new_cache_len)
 		return (0);
