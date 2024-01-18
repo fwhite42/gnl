@@ -1,4 +1,5 @@
-NAME			:=	libgnl.a
+NAME			:= libgnl.a
+BUFF_SIZE_VAL	:= 10
 
 # Silence All Errors
 SILENT			:=	2> /dev/null || true
@@ -18,11 +19,13 @@ OBJECTS			:= $(FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 TEST_FILES		:= $(TEST_FILE_NAMES:%=$(TEST_DIR)/%.c)
 
 # Compiler settings
-COMPILE			:= gcc -D BUFFER_SIZE=1
-COMPILE_FLAGS	:= -Wall -Werror -Wextra
-DONT_LINK		:= -c
+CC				:= gcc
+CC_FLAGS		:= -Wall -Werror -Wextra
+NO_LINK			:= -c
 LINK_GNL		:= -L. -lgnl
 HEADERS			:= -I$(SRC_DIR)
+BUFF_SIZE		:= -D BUFFER_SIZE=$(BUFF_SIZE_VAL)
+COMPILE			:= $(CC) $(BUFF_SIZE) $(CC_FLAGS) $(NO_LINK) $(HEADERS)
 # Archive settings
 ARCHIVE			:= ar -rc
 
@@ -32,7 +35,7 @@ $(OBJ_DIR)	:
 	@mkdir $(OBJ_DIR)
 
 $(OBJECTS):$(OBJ_DIR)/%.o	:	$(SRC_DIR)/%.c $(OBJ_DIR)
-	@$(COMPILE) $(COMPILE_FLAGS) $(DONT_LINK) $(HEADERS) $< -o $@
+	@$(COMPILE) $< -o $@
 
 $(NAME): $(OBJECTS)
 	@$(ARCHIVE) $(NAME) $(OBJECTS)
@@ -45,7 +48,7 @@ fclean : clean
 	@rm libgnl.a
 
 $(TEST_FILE_NAMES):%: $(TEST_DIR)/%.c $(NAME)
-	@gcc $(HEADERS) $(LINK_GNL) $< -o run_test.exe
-	@./run_test.exe 5 $(SILENT)
-	@rm -rf ./run_test.exe $(SILENT)
+	@gcc -g -fsanitize=leak $(HEADERS) $(LINK_GNL) $< -o run_test.exe
+	#@./run_test.exe 5 $(SILENT)
+	#@rm -rf ./run_test.exe $(SILENT)
 .PHONY: objects clean archive fclean $(TEST_FILE_NAMES)

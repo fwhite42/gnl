@@ -6,7 +6,7 @@
 /*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/02 22:36:42 by fwhite42          #+#    #+#             */
-/*   Updated: 2024/01/16 18:27:23 by fwhite42         ###   ########.fr       */
+/*   Updated: 2024/01/17 12:52:21 by fwhite42         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef GET_NEXT_LINE_H
@@ -15,7 +15,6 @@
 # include<stdlib.h>
 # include<unistd.h>
 # include<stdio.h>
-//# define BUFFER_SIZE 42
 //============================================================================//
 //	> Prototype:
 char	*get_next_line(int fd);
@@ -102,8 +101,8 @@ int		gnl_split_cache_and_send2memory(char **cache, char **memory);
 //		  is created;
 //		3. *cache is freed, zeroed and updated to the address of the string
 //		  with the line
-//		4. *memory is zeroed, freed and updated to the address of the string
-//		  with the remaining chunks
+//		4. *memory is set to the address of the string with the remaining
+//			chunks
 //		* More precisely:
 //		The total length of the string stored at *cache as well as the length
 //		of the first line stored at *cache is computed.
