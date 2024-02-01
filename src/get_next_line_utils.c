@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/02 22:42:51 by fwhite42          #+#    #+#             */
-/*   Updated: 2024/01/17 16:58:04 by fwhite42         ###   ########.fr       */
+/*                                                                            */
+/*   get_next_line_utils.c                                   4 2              */
+/*                                                        (@)-=-(@)           */
+/*   By: fwhite42 <FUCK THE NORM>                          (  o  )            */
+/*                                                       _/'-----'\_          */
+/*   Created: 2024/02/01 13:13:57 by fwhite42          \\ \\     // //        */
+/*   Updated: 2024/02/01 14:11:02 by fwhite42           _)/_\---/_\(_         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	gnl_bzero(char *target, size_t number_of_bytes)
 	}
 }
 
-void	gnl_config_memory(char **target, size_t old_size, size_t new_size)
+int	gnl_config_memory(char **target, size_t old_size, size_t new_size)
 {
 	if (*target)
 	{
@@ -64,6 +64,13 @@ void	gnl_config_memory(char **target, size_t old_size, size_t new_size)
 	{
 		*target = (char *)malloc(new_size);
 		if (*target)
+		{
 			gnl_bzero(*target, new_size);
+			return (1);
+		}
+		else
+			return (-1);
 	}
+	else
+		return (0);
 }

@@ -1,14 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fwhite42 <FUCK THE NORM>                   +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/02 22:36:42 by fwhite42          #+#    #+#             */
-/*   Updated: 2024/01/17 12:52:21 by fwhite42         ###   ########.fr       */
+/*                                                                            */
+/*   get_next_line.h                                         4 2              */
+/*                                                        (@)-=-(@)           */
+/*   By: fwhite42 <FUCK THE NORM>                          (  o  )            */
+/*                                                       _/'-----'\_          */
+/*   Created: 2024/02/01 13:13:31 by fwhite42          \\ \\     // //        */
+/*   Updated: 2024/02/01 13:30:36 by fwhite42           _)/_\---/_\(_         */
 /*                                                                            */
 /* ************************************************************************** */
+
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
@@ -59,7 +60,7 @@ size_t	gnl_memory_len(char *char_ptr, char *sep_list, int sep_list_length);
 //	    string, hence the presence of sep_list_length).
 //============================================================================//
 //	> Prototype:
-void	gnl_config_memory(char **target, size_t oldsize, size_t newsize);
+int		gnl_config_memory(char **target, size_t oldsize, size_t newsize);
 //	> Defined in:
 //		get_next_line_utils.c
 //	> Description :

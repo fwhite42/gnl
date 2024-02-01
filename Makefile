@@ -1,5 +1,5 @@
 NAME			:= libgnl.a
-BUFF_SIZE_VAL	:= 10
+BUFF_SIZE_VAL	:= 1
 
 # Silence All Errors
 SILENT			:=	2> /dev/null || true
@@ -41,14 +41,15 @@ $(NAME): $(OBJECTS)
 	@$(ARCHIVE) $(NAME) $(OBJECTS)
 	@$(MAKE) clean
 
+bonus : $(NAME)
+
 clean:
 	@rm -rf $(OBJ_DIR)
 
 fclean : clean
 	@rm libgnl.a
+	@rm *.exe
 
 $(TEST_FILE_NAMES):%: $(TEST_DIR)/%.c $(NAME)
-	@gcc -g -fsanitize=leak $(HEADERS) $(LINK_GNL) $< -o run_test.exe
-	#@./run_test.exe 5 $(SILENT)
-	#@rm -rf ./run_test.exe $(SILENT)
+	@gcc $(HEADERS) $(LINK_GNL) $< -o run_test.exe
 .PHONY: objects clean archive fclean $(TEST_FILE_NAMES)
